@@ -1,3 +1,5 @@
+#include <system.h>
+
 /* copies `count' bytes of `src' to `dest' */
 unsigned char *memcpy(unsigned char *dest, const unsigned char *src, int count)
 {
@@ -82,6 +84,9 @@ int main()
 
     /* .. and leave this loop in.  There is an endless loop in `start.asm'
      * also, if you accidentally delete this next line */
+
+    init_video();
+    puts((unsigned char*)"Hello, World!");
 
     for (;;);
 }
