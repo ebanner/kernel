@@ -1,8 +1,6 @@
-/* You will need to code these up yourself! */
+/* copies `count' bytes of `src' to `dest' */
 unsigned char *memcpy(unsigned char *dest, const unsigned char *src, int count)
 {
-    /* Add code here to copy `count' bytes from data to `src' to
-     * `dest', finally return `dest' */
     int i;
     
     for (i = 0; i < count; i++)
@@ -11,11 +9,9 @@ unsigned char *memcpy(unsigned char *dest, const unsigned char *src, int count)
     return dest;
 }
 
+/* sets the first `count' bytes of `dest' to `val' */
 unsigned char *memset(unsigned char *dest, unsigned char val, int count)
 {
-    /* Add code here to set `count' bytes in `dest' to `val'.
-     * Again, return `dest'. */
-    
     int i;
 
     for (i = 0; i < count; i++)
@@ -24,14 +20,21 @@ unsigned char *memset(unsigned char *dest, unsigned char val, int count)
     return dest;
 }
 
+/* copies `count' words from `src' to `dest' */
+unsigned short *memcpyw(unsigned short *dest, const unsigned short *src, int count)
+{
+    int i;
+    
+    for (i = 0; i < count; i++)
+        dest[i] = src[i];
+
+    return dest;
+}
+
+/* sets the first `count' words of `dest' to `val' */
 unsigned short *memsetw(unsigned short *dest, unsigned short val, int count)
 {
-    /* Same as above, but this time, we're working with a 16-bit
-     * `val' and dest pointer.  Your code can be an exact copy of
-     * the above, provided that your local variables, if any, are
-     * unsigned short */
-
-    unsigned short i;
+    int i;
 
     for (i = 0; i < count; i++)
         dest[i] = val;
@@ -39,12 +42,9 @@ unsigned short *memsetw(unsigned short *dest, unsigned short val, int count)
     return dest;
 }
 
+/* returns the length of a string */
 int strlen(const char *str)
 {
-    /* This loops through character array `str', returning how many characters
-     * it needs to check before it finds a 0.  In simple words, it returns the
-     * length in bytes of a string */
-
     int i;
 
     for (i = 0; str[i] != '\0'; i++)
