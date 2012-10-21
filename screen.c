@@ -16,7 +16,7 @@ void move_csr(void);
  * buffer can be broken up into an `upper' 8 bits and a `lower' 8 bits, like
  * so:
  *
- *  15______12_11________8_7______________________0
+ *  15------12-11--------8-7---------------------0
  * |Backcolor | Forecolor |       Character       |
  *  ----------------------------------------------
  */
