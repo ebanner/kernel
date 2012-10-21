@@ -21,7 +21,7 @@ void move_csr(void);
  *  ----------------------------------------------
  */
 unsigned short *textmemptr;
-int attrib = 0x0F;  /* white foreground, black background */
+int attrib = 0x0D;  /* white foreground, black background */
 int csr_row, csr_col = 0;
 
 /* Scrolls the screen */
@@ -172,7 +172,7 @@ void putch(unsigned char c)
 
     /* If the cursor has reached the edge of the screen's width, we insert a
      * new line in there */
-    if (80 <= csr_col) {
+    if (csr_col >= 80) {
         csr_row++;
         csr_col = 0;
     }
@@ -189,6 +189,25 @@ void puts(unsigned char *text)
 
     for (i = 0; i < strlen((char *)text); i++) {
         putch(text[i]);
+    }
+}
+
+/* Print an integer to the screen.  This will fail on the largest negative
+ * integer. */
+void putint(int n) {
+    if (n < 0) {
+        putch('-');
+        n = -n;
+    }
+    int ones = n % 10;
+    if (n / 10 == 0) {
+        /* n%10 will get us the digit in the ONEs place.  Adding 48 to that
+         * will get us the ASCII code for that digit.  Integer division by 10
+         * will chop off the ONEs place */
+        putch(ones+48);
+    } else {
+        putint(n / 10);
+        putch(ones+48);
     }
 }
 

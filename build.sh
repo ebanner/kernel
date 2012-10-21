@@ -1,5 +1,8 @@
 #!/bin/bash 
 
+echo Cleaning...
+rm *.o
+
 echo Now assembling, compiling, and linking your kernel...
 nasm -f elf -o start.o start.asm
 

@@ -86,7 +86,8 @@ int main()
      * also, if you accidentally delete this next line */
 
     init_video();
-    puts((unsigned char*)"Hello, World!");
+    puts((unsigned char*)"Hello, World!\n");
+    putint(-42);
 
     for (;;);
 }
