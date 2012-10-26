@@ -6,7 +6,8 @@
 #define CR  0x0D
 #define NL  0x0A
 
-void move_csr(void);
+void puthex(int h);
+void print_hexdigit(int d);
 
 /* These define our textpointer, our background and foreground colors
  * (attributes), and x and y cursor coordinates */
@@ -80,27 +81,6 @@ void scroll(void)
     }
 }
 
-void cls()
-{
-    unsigned blank;
-    int r; /* row */
-
-    /* Again, we need the `short' that will be used to represent a space with
-     * color */
-    blank = 0x20 | (attrib << 8);
-
-    /* Sets the entire screen to spaces in our current color */
-    /* For every row, write a blank to every column in that row.  Since there
-     * are 80 columns in a row, we write a blank to each of them */
-    for (r = 0; r < 25; r++)
-        memsetw(textmemptr+(r*80), blank, 80);
-
-    /* Update our virtual cursor, and then move the hardware cursor */
-    csr_row = 0;
-    csr_col = 0;
-    move_csr();
-}
-
 /* Updates the hardware cursor: the little blinking line on the screen under
  * the last character pressed */
 void move_csr(void)
@@ -127,6 +107,27 @@ void move_csr(void)
     outportb(0x3D5, offset >> 8);
     outportb(0x3D4, 15);
     outportb(0x3D5, offset);
+}
+
+void cls()
+{
+    unsigned blank;
+    int r; /* row */
+
+    /* Again, we need the `short' that will be used to represent a space with
+     * color */
+    blank = 0x20 | (attrib << 8);
+
+    /* Sets the entire screen to spaces in our current color */
+    /* For every row, write a blank to every column in that row.  Since there
+     * are 80 columns in a row, we write a blank to each of them */
+    for (r = 0; r < 25; r++)
+        memsetw(textmemptr+(r*80), blank, 80);
+
+    /* Update our virtual cursor, and then move the hardware cursor */
+    csr_row = 0;
+    csr_col = 0;
+    move_csr();
 }
 
 void putch(unsigned char c)
@@ -208,6 +209,46 @@ void putint(int n) {
     } else {
         putint(n / 10);
         putch(ones+48);
+    }
+}
+
+/* Prints a hexidecmal integer to the screen in base 16. */
+void puthex(int h)
+{
+    if (h/16 == 0) {
+        putch('0');
+        putch('x');
+        print_hexdigit(h%16);
+    } else {
+        puthex(h/16);
+        print_hexdigit(h%16);
+    }
+}
+
+/* Returns the appropriate hex digit for any 0 < digit < 15 */
+void print_hexdigit(int d) {
+    switch (d) {
+        case 10:
+            putch('A');
+            break;
+        case 11:
+            putch('B');
+            break;
+        case 12:
+            putch('C');
+            break;
+        case 13:
+            putch('D');
+            break;
+        case 14:
+            putch('E');
+            break;
+        case 15:
+            putch('F');
+            break;
+        default:
+            putch(d+48);
+            break;
     }
 }
 

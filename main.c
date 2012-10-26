@@ -85,9 +85,24 @@ int main()
     /* .. and leave this loop in.  There is an endless loop in `start.asm'
      * also, if you accidentally delete this next line */
 
-    init_video();
-    puts((unsigned char*)"Hello, World!\n");
-    putint(-42);
+    // set up the Global Descriptor Table
+    gdt_install();
 
+    // set up the Interrupt Descriptor Table
+    idt_install();
+
+    // clear the screen and point to the VGA buffer
+    init_video();
+
+    // print stuff to the screen
+    puts((unsigned char*)"The quick brown fox jumped over the lazy brown dog. ");
+    putint(-42);
+    puts((unsigned char *)" ");
+    puthex(0xEDDE);
+
+    puts("\nDividing by zero... ");
+    putint(5/0);
+
+    // jump into an endless loop
     for (;;);
 }
