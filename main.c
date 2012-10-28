@@ -1,6 +1,6 @@
 #include <system.h>
 
-/* copies `count' bytes of `src' to `dest' */
+/* Copies `count' bytes of `src' to `dest'. */
 unsigned char *memcpy(unsigned char *dest, const unsigned char *src, int count)
 {
     int i;
@@ -11,7 +11,7 @@ unsigned char *memcpy(unsigned char *dest, const unsigned char *src, int count)
     return dest;
 }
 
-/* sets the first `count' bytes of `dest' to `val' */
+/* Sets the first `count' bytes of `dest' to `val'. */
 unsigned char *memset(unsigned char *dest, unsigned char val, int count)
 {
     int i;
@@ -22,7 +22,7 @@ unsigned char *memset(unsigned char *dest, unsigned char val, int count)
     return dest;
 }
 
-/* copies `count' words from `src' to `dest' */
+/* Copies `count' words from `src' to `dest'. */
 unsigned short *memcpyw(unsigned short *dest, const unsigned short *src, int count)
 {
     int i;
@@ -33,7 +33,7 @@ unsigned short *memcpyw(unsigned short *dest, const unsigned short *src, int cou
     return dest;
 }
 
-/* sets the first `count' words of `dest' to `val' */
+/* Sets the first `count' words of `dest' to `val'. */
 unsigned short *memsetw(unsigned short *dest, unsigned short val, int count)
 {
     int i;
@@ -44,7 +44,7 @@ unsigned short *memsetw(unsigned short *dest, unsigned short val, int count)
     return dest;
 }
 
-/* returns the length of a string */
+/* Returns the length of a string. */
 int strlen(const char *str)
 {
     int i;
@@ -55,54 +55,62 @@ int strlen(const char *str)
     return i;
 }
 
-/* We will use this later on for reading from the I/O ports to get data form
- * devices such as the keyboard.  We are using what is called `inline assembly'
- * in these routines to actually do the work */
+/* Receives a byte from an I/O location.  We will use this later on for
+ * reading from the I/O ports to get data form devices such as the keyboard.
+ * */
 unsigned char inportb(unsigned short _port)
 {
     unsigned char rv;
 
-    __asm__ __volatile__ ("inb %1, %0" : "=a" (rv) : "dN" (_port));
+    __asm__ __volatile__ ("inb %1, %0" 
+            : "=a" (rv) 
+            : "Nd" (_port));
 
     return rv;
 }
 
-/* We will use this to write to I/O ports to send bytes to devices.  This will
- * be used in the next tutorial for changing the textmode cursor position.
- * Again, we use some inline assembly for the stuff that simply cannot be done
- * in C */
+/* Sends a byte on an I/O location.  This will be used for changing the
+ * textmode cursor position.  The `a' modifier enforces `_data' to be placed
+ * in the eax register before the asm command is issued and `Nd' allows for
+ * one-byte constant values to be assembled as constants, freeing the edx
+ * register for other cases. */
 void outportb(unsigned short _port, unsigned char _data)
 {
-    __asm__ __volatile__ ("outb %1, %0" : : "dN" (_port), "a" (_data)); 
+    __asm__ __volatile__ ("outb %1, %0" 
+            : /* no output registers */
+            : "Nd" (_port), "a" (_data)
+            ); 
 }
 
-/* This is a very simple main() functino.  All it does is sit in an infinite
- * loop.  This will be like out `idle' loop */
+/* start.asm hands over control to this function immediately after setting esp
+ * to point to our 8K stack. */
 int main()
 {
-    /* You would add commands after here */
-
-    /* .. and leave this loop in.  There is an endless loop in `start.asm'
-     * also, if you accidentally delete this next line */
-
-    // set up the Global Descriptor Table
+    /* set up the Global Descriptor Table */
     gdt_install();
 
-    // set up the Interrupt Descriptor Table
+    /* set up the Interrupt Descriptor Table */
     idt_install();
+    /* populate the IDT with 32 ISRs */
+    idt_init();
 
-    // clear the screen and point to the VGA buffer
+    /* clear the screen and set up a pointer to the VGA buffer */
     init_video();
 
-    // print stuff to the screen
+    /* print some stuff to the screen */
     puts((unsigned char*)"The quick brown fox jumped over the lazy brown dog. ");
     putint(-42);
     puts((unsigned char *)" ");
     puthex(0xEDDE);
-
-    puts("\nDividing by zero... ");
+    putch('\n');
     putint(5/0);
 
-    // jump into an endless loop
+    /* Testing to see if the `Divide by zero' exception is caught correctly by
+     * the IDT.  Currently there is no entry in the IDT for dividing by zero,
+     * so the machine resets endlessly.  */
+    //puts((unsigned char *)"\nDividing by zero... ");
+    //putint(5/0);
+
+    /* jump into an endless loop */
     for (;;);
 }

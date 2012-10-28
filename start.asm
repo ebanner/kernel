@@ -1,4 +1,4 @@
-; This is the kernel's entry point. We could either call main here,
+; This is the kernel's entry point. We could either call `main' here,
 ; or we can use this to setup the stack or other nice stuff, like
 ; perhaps setting up the GDT and segments. Please note that interrupts
 ; are disabled at this point: More on interrupts later!
@@ -20,7 +20,7 @@ mboot:
     MULTIBOOT_CHECKSUM	equ -(MULTIBOOT_HEADER_MAGIC + MULTIBOOT_HEADER_FLAGS)
     EXTERN code, bss, end
 
-    ; This is the GRUB Multiboot header. A boot signature
+    ; This is the GRUB Multiboot header.  Allocate dword size values.
     dd MULTIBOOT_HEADER_MAGIC
     dd MULTIBOOT_HEADER_FLAGS
     dd MULTIBOOT_CHECKSUM
@@ -33,46 +33,46 @@ mboot:
     dd end
     dd start
 
-; This is an endless loop here. Make a note of this: Later on, we
-; will insert an 'extern main', followed by 'call main', right
-; before the 'jmp $'.
+; This is an endless loop here.  We hand over control to the `main' function
+; in `main.c' here.
 stublet:
     extern main
     call main
     jmp $
 
 
-; Shortly we will add code for loading the GDT right here!
-; This will set up our new segment registers.  We need to do something special
-; in order to set CS.  We do what is called a ``far jump".  A jump that
-; includes a segment as well as an offset.  This is declared in C as `extern
-; void gdt_flush();'
-global gdt_flush       ; Allows the C code to link to this
+; The function loads a new GDT and fixes all segment registers.
+global gdt_flush       ; Allows the C code in `gdt.c' to link to this
 extern gp              ; Says that `gp' is in another file
 gdt_flush:
-    lgdt [gp]          ; Load the GDT with out `gp' which is a special pointer
-    mov ax, 0x10       ; 0x10 is the offset in the GDT to our data segment
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    mov ss, ax
-    jmp 0x08:flush2    ; 0x08 is the offset to our code segment: Far jump!
-flush2:
+    lgdt [gp]          ; Load the GDT with `gp' (defined in `gdt.'), which is
+                       ; the pointer to our new GDT
+    mov ax, 0x10       ; 0x10 is the offset in the GDT which contains the base
+    mov ds, ax         ; address of the array of GDT entries.  Why are we
+    mov es, ax         ; setting the Stack Segment (ss), Data Segment (ds),
+    mov fs, ax         ; Extra Segment (es), F Segment (fs), and G Segement
+    mov gs, ax         ; (gs) to point to the Data Segment in our GDT?  It's bc
+    mov ss, ax         ; these registers all need to know where the kernel's
+                       ; data section is.
+
+    jmp 0x08:foo       ; This ``far jump" appears to be the only way to set
+                       ; the Code Segment (cs) register.  So this command loads 
+                       ; `IP' with the address of `foo' and loads `CS' with
+                       ; 0x08.  Why 0x08?  Because 0x08 is the offset in our GDT
+                       ; in which the code segment entry lives.  Remember,
+                       ; each of the entries in the GDT are 8 bytes.
+foo:
     ret                ; Returns back to the C code!
 
 
-
-; Loads the IDT defined in `idtp' into the processor.
-; This is declared in C as `extern void idt_load();'
+; Lets the processor know where the new IDT lives.
 global idt_load
 extern idtp
 idt_load:
     lidt [idtp]
     ret
 
-; In just a few pages in this tutorial, we will add our Interrupt
-; Service Routines (ISRs) right here!
+; Labels to hangle interrup execeptions.
 global isr0
 global isr1
 global isr2
@@ -239,6 +239,135 @@ isr18:
     push byte 0
     push byte 18
     jmp isr_common_stub
+
+; 19: Reserved Exception
+isr19:
+    cli
+    push byte 0
+    push byte 19
+    jmp isr_common_stub
+
+; 20: Reserved Exception
+isr20:
+    cli
+    push byte 0
+    push byte 20
+    jmp isr_common_stub
+
+; 21: Reserved Exception
+isr21:
+    cli
+    push byte 0
+    push byte 21
+    jmp isr_common_stub
+
+; 22: Reserved Exception
+isr22:
+    cli
+    push byte 0
+    push byte 22
+    jmp isr_common_stub
+
+; 23: Reserved Exception
+isr23:
+    cli
+    push byte 0
+    push byte 23
+    jmp isr_common_stub
+
+; 24: Reserved Exception
+isr24:
+    cli
+    push byte 0
+    push byte 24
+    jmp isr_common_stub
+
+; 25: Reserved Exception
+isr25:
+    cli
+    push byte 0
+    push byte 25
+    jmp isr_common_stub
+    
+; 26: Reserved Exception
+isr26:
+    cli
+    push byte 0
+    push byte 26
+    jmp isr_common_stub
+
+; 27: Reserved Exception
+isr27:
+    cli
+    push byte 0
+    push byte 27
+    jmp isr_common_stub
+
+; 28: Reserved Exception
+isr28:
+    cli
+    push byte 0
+    push byte 28
+    jmp isr_common_stub
+
+; 29: Reserved Exception
+isr29:
+    cli
+    push byte 0
+    push byte 29
+    jmp isr_common_stub
+
+; 30: Reserved Exception
+isr30:
+    cli
+    push byte 0
+    push byte 30
+    jmp isr_common_stub
+
+; 31: Reserved Exception
+isr31:
+    cli
+    push byte 0
+    push byte 31
+    jmp isr_common_stub
+
+; General routine that executes every time the an interrupt execption is
+; thrown.  This saves the state of the processor on the stack so we can execute
+; the ISR.  This function also sets up kernel mode segments, calls
+; the C-level fault handler, and finally restores the stack frame.
+extern fault_handler
+isr_common_stub:
+    pusha        ; pushes all general purpose registers onto the stack in the
+                 ; following order: eax, ecx, edx, ebx, esp, ebp, esi, edi, 
+    mov ax, ds   ; Lower 16 bits of eax = ds
+    push eax     ; save Data Segment descriptor
+
+    mov ax, 0x10 ; Load the kernel Data Segment descriptor
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    ;mov eax, esp
+    ;push eax     ; save the old stack pointer
+    ;mov eax, fault_handler
+
+    call fault_handler ; Call the C function to handle a fault.
+
+    pop eax      ; reload the original Data Segment descriptor
+    ;pop gs
+    ;pop fs
+    ;pop es
+    ;pop ds
+    popa         ; reload the original data segment descriptor
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    add esp, 8   ; Leap-frog over the exception number and error code we
+                 ; pushed onto the stack before we got here.
+    sti          ; enable iterrupts agains
+    iret         ; Pops 5 things at once: cs, eip, eflags, ss, and esp.
+
 
 ; Here is the definition of our BSS section. Right now, we'll use
 ; it just to store the stack. Remember that a stack actually grows

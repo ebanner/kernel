@@ -20,13 +20,17 @@ gcc -Wall -O -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc
 gcc -Wall -O -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc \
     -fno-builtin -I./include -c -o gdt.o gdt.c
 
-# create object module for GDT
+# create object module for IDT
 gcc -Wall -O -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc \
     -fno-builtin -I./include -c -o idt.o idt.c
+
+# create object module for ISRs
+gcc -Wall -O -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc \
+    -fno-builtin -I./include -c -o isrs.o isrs.c
 
 # this links all your files.  remember that as you add *.o files, you need to
 # add them after start.o.  if you don't add them at all, they won't be in your
 # kernel!
-ld -T link.ld -o kernel.bin start.o main.o screen.o gdt.o idt.o
+ld -T link.ld -o kernel.bin start.o main.o screen.o gdt.o idt.o isrs.o
 
 echo Done!

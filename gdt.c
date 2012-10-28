@@ -53,8 +53,8 @@ void gdt_set_gate(int num, unsigned long base, unsigned long limit, unsigned cha
  * update the new segment registers. */
 void gdt_install()
 {
-    /* Seteup the GDT pointer and limit */
-    gp.limit = (sizeof(struct gdt_entry)*3) - 1;  // GDT cannot be size 0
+    /* Setup the GDT pointer and limit */
+    gp.limit = (sizeof(struct gdt_entry)*3) - 1;  // zero-indexed--hence the need to subtract 1
     gp.base = (int)&gdt;
 
     /* Our NULL descriptor */
@@ -70,6 +70,9 @@ void gdt_install()
      * Data Segment */
     gdt_set_gate(2, 0, 0xFFFFFFFF, 0x92, 0xCF);
 
-    /* Flush out the old GDT and install the new changes! */
+    /* We'll eventually defined descriptors for User Data and User Code
+     * segements... */
+
+    /* Load the new GDT we just defined, replacing the GDT that GRUB provides */
     gdt_flush();
 }

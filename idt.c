@@ -25,7 +25,7 @@ struct idt_ptr idtp;
 extern void idt_load();
 
 /* Use this function to set an entry in the IDT. */
-void idt_set_gate(unsigned char num, unsigned long base, unsigned short sel, unsigned char flags)
+void idt_set_gate(unsigned char num, unsigned int base, unsigned short sel, unsigned char flags)
 {
     /* Take the arguments `base' and split it up into a high and low 16-bits,
      * storing them in idt[num].base_hi and base_lo. */
