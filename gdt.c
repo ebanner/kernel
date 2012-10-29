@@ -28,7 +28,7 @@ struct gdt_ptr gp;
 extern void gdt_flush();
 
 /* Setup a descriptor in the Global Descriptor Table */
-void gdt_set_gate(int num, unsigned long base, unsigned long limit, unsigned char access, unsigned char gran)
+void gdt_set_gate(int num, unsigned int base, unsigned int limit, unsigned char access, unsigned char gran)
 {
     /* Setup the descriptor base address */
     /* Low 16 bits of limit */
@@ -54,23 +54,40 @@ void gdt_set_gate(int num, unsigned long base, unsigned long limit, unsigned cha
 void gdt_install()
 {
     /* Setup the GDT pointer and limit */
-    gp.limit = (sizeof(struct gdt_entry)*3) - 1;  // zero-indexed--hence the need to subtract 1
+    gp.limit = ( sizeof(struct gdt_entry) * 3) - 1;  // zero-indexed--hence the need to subtract 1
     gp.base = (int)&gdt;
 
     /* Our NULL descriptor */
-    gdt_set_gate(0, 0, 0, 0, 0);
+    gdt_set_gate(
+            0,          /* NUM:    zeroth entry in the GDT */
+            0,          /* BASE:   base address of 0 */
+            0,          /* LIMIT:  spans no space in memory */
+            0,          /* ACCESS: not present, kernel ring 0, non-executable, can only 
+                           be executed from ring 0, READ ONLY, access bit is 0 */
+            0           /* FLAGS: `limit' is in 1B blocks, 16 bit protected mode */
+            );     
 
-    /* The second entry in our Code Segment.  The base address is 0, the limit
-     * is 4GB, it used 4KB granularity, uses 32-bit opcodes, and is a Code
-     * Segment descriptor. */
-    gdt_set_gate(1, 0, 0xFFFFFFFF, 0x9A, 0xCF);
+    /* Code Segment descriptor */
+    gdt_set_gate(
+            1,          /* NUM:    first entry in the GDT */
+            0,          /* BASE:   base address of 0 */
+            0xFFFFFFFF, /* LIMIT:  spans all of memory */
+            0x9A,       /* ACCESS: present, kernel ring 0, executable, can only 
+                            be executed from ring 0, READ ONLY, access bit is 0 */
+            0xCF        /* FLAGS: `limit' is in 4K blocks, 32 bit protected mode */
+            );
 
-    /* The third entry is our Data Segment.  It's exactly the same as our code
-     * segment, but the descriptor type in the entry's access byte says it's a
-     * Data Segment */
-    gdt_set_gate(2, 0, 0xFFFFFFFF, 0x92, 0xCF);
+    /* Data Segment descriptor */
+    gdt_set_gate(
+            2,          /* NUM:    second entry in the GDT */
+            0,          /* BASE:   base address of 0 */
+            0xFFFFFFFF, /* LIMIT:  spans all of memory */
+            0x92,       /* ACCESS: present, kernel ring 0, NOT executable, can only 
+                            be read from ring 0, READ/WRITE, access bit is 0 */
+            0xCF        /* FLAGS: `limit' is in 4K blocks, 32 bit protected mode */
+            );
 
-    /* We'll eventually defined descriptors for User Data and User Code
+    /* We'll eventually define descriptors for User Data and User Code
      * segements... */
 
     /* Load the new GDT we just defined, replacing the GDT that GRUB provides */

@@ -1,6 +1,4 @@
-Most of this code has come from Bran's Kernel Development tutorial.  You can
-find this tutorial at http://www.osdever.net/bkerndev/Docs/title.htm.
-
-Another resouce I have heavily relied on is Eric Hutchin's ``Writing a Kernel
-From Scratch with Free Software".  This book can be downloaded at
-http://cs.potsdam.edu/CS/files/Capstone/2010/hutchins.pdf.
+Most of this code has come from Bran's Kernel Development tutorial and
+JamesM's kernel development tutorial.  You can find them at
+http://www.osdever.net/bkerndev/Docs/title.htm and
+http://www.jamesmolloy.co.uk/tutorial_html/index.html respectively.

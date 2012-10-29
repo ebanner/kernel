@@ -53,15 +53,15 @@ gdt_flush:
     mov fs, ax         ; Extra Segment (es), F Segment (fs), and G Segement
     mov gs, ax         ; (gs) to point to the Data Segment in our GDT?  It's bc
     mov ss, ax         ; these registers all need to know where the kernel's
-                       ; data section is.
+                       ; data segment is.
 
-    jmp 0x08:foo       ; This ``far jump" appears to be the only way to set
+    jmp 0x08:setCS     ; This ``far jump" appears to be the only way to set
                        ; the Code Segment (cs) register.  So this command loads 
                        ; `IP' with the address of `foo' and loads `CS' with
                        ; 0x08.  Why 0x08?  Because 0x08 is the offset in our GDT
                        ; in which the code segment entry lives.  Remember,
                        ; each of the entries in the GDT are 8 bytes.
-foo:
+setCS:
     ret                ; Returns back to the C code!
 
 
@@ -339,7 +339,7 @@ extern fault_handler
 isr_common_stub:
     pusha        ; pushes all general purpose registers onto the stack in the
                  ; following order: eax, ecx, edx, ebx, esp, ebp, esi, edi, 
-    mov ax, ds   ; Lower 16 bits of eax = ds
+    mov ax, ds   
     push eax     ; save Data Segment descriptor
 
     mov ax, 0x10 ; Load the kernel Data Segment descriptor
@@ -347,22 +347,16 @@ isr_common_stub:
     mov es, ax
     mov fs, ax
     mov gs, ax
-    ;mov eax, esp
-    ;push eax     ; save the old stack pointer
-    ;mov eax, fault_handler
 
     call fault_handler ; Call the C function to handle a fault.
 
     pop eax      ; reload the original Data Segment descriptor
-    ;pop gs
-    ;pop fs
-    ;pop es
-    ;pop ds
-    popa         ; reload the original data segment descriptor
-    mov ds, ax
+    mov ds, ax   ; restore data segment and other segment registers
     mov es, ax
     mov fs, ax
     mov gs, ax
+
+    popa         ; pops edi, esi, ebp, ...
     add esp, 8   ; Leap-frog over the exception number and error code we
                  ; pushed onto the stack before we got here.
     sti          ; enable iterrupts agains

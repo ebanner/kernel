@@ -76,58 +76,25 @@ void idt_init()
     idt_set_gate(31, (unsigned int)isr31, 0x08, 0x8E);
 }
 
-/* Define an array of strings to contain an message for all 32 exceptions */
-/*char *exception_messages[] = {
-    "Division by Zero",
-    "Debug",
-    "Non Maskable Interrupt",
-    "Breakpoint",
-    "Into Detected Overflow",
-    "Out of Bounds",
-    "Invalid Opcode", 
-    "No Coprocessor",
-    "Double Fault",
-    "Coprocessor Segment Overrun",
-    "Bad TSS",
-    "Segment Not Present",
-    "Stack Fault",
-    "General Protection Fault",
-    "Page Fault",
-    "Unknown Interrupt",
-    "Coprocessor Fault",
-    "Alignment Check (486+)",
-    "Machine Check (Pentium 586+)",
-    "Reserved",
-    "Reserved",
-    "Reserved",
-    "Reserved",
-    "Reserved",
-    "Reserved",
-    "Reserved",
-    "Reserved",
-    "Reserved",
-    "Reserved",
-    "Reserved",
-    "Reserved",
-    "Reserved" }
-*/
-
 /* Every ISR will call this function after an exception has occurred.  This
  * provides an explicit way of telling which interrupt happened.  For now, we
  * print the exception message and enter an inifinte loop.  Keep in mind that
  * interrupts have been disabled (cli opcode). */
 void fault_handler(struct registers regs)
 {
-    /* Ensure the fault that needs to be handled has an exception number
-     * between 0 and 31 */
-    if (0 <= regs.int_no && regs.int_no <= 31) {
-        /* Print which fault has occurred and enter an infinite loop */
-        //puts(exception_message[regs.int_no]);
-        //puts(": ");
-        puts((unsigned char *)"Inerrupt number: ");
-        putint(regs.err_code);
-        //puts((unsigned char *)"\nException... system halted.");
-
-        for(;;);
+    /* Print the interrupt number */
+    puts("Interrupt number: ");
+    puthex(regs.int_no);
+    putch('\n');
+    switch (regs.err_code) {
+        case 8: 
+        case 10: 
+        case 11: 
+        case 12: 
+        case 13: 
+        case 14:
+            puts("Error Code: ");
+            puthex(regs.err_code);
+            putch('\n');
     }
 }

@@ -98,12 +98,15 @@ int main()
     init_video();
 
     /* print some stuff to the screen */
-    puts((unsigned char*)"The quick brown fox jumped over the lazy brown dog. ");
-    putint(-42);
-    puts((unsigned char *)" ");
-    puthex(0xEDDE);
-    putch('\n');
-    putint(5/0);
+    //puts((unsigned char*)"The quick brown fox jumped over the lazy brown dog. ");
+    //putint(-42);
+    //puts((unsigned char *)" ");
+    //puthex(0xEDDE);
+    //putch('\n');
+
+    /* will cause interrupts 3 and 4 */
+    __asm__ __volatile__ ("int $0x3");
+    __asm__ __volatile__ ("int $0x4");
 
     /* Testing to see if the `Divide by zero' exception is caught correctly by
      * the IDT.  Currently there is no entry in the IDT for dividing by zero,

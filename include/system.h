@@ -17,7 +17,7 @@ extern void cls();
 extern void putch(unsigned char c);
 extern void putint(int c);
 extern void puthex(int h);
-extern void puts(unsigned char *text);
+extern void puts(char *text);
 extern void settextcolor(unsigned char forecolor, unsigned char backcolor);
 extern void init_video();
 
