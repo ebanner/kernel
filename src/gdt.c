@@ -1,4 +1,4 @@
-#include <system.h>
+// gdt.c -- functions for setting up and inserting descriptors into the GDT
 
 /* Defines a GDT entry.  We say `packed', because it prevents the compiler from
  * doing things that it thinks is best.  `Packing' prevents compiler
@@ -86,9 +86,6 @@ void gdt_install()
                             be read from ring 0, READ/WRITE, access bit is 0 */
             0xCF        /* FLAGS: `limit' is in 4K blocks, 32 bit protected mode */
             );
-
-    /* We'll eventually define descriptors for User Data and User Code
-     * segements... */
 
     /* Load the new GDT we just defined, replacing the GDT that GRUB provides */
     gdt_flush();

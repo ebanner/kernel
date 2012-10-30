@@ -1,13 +1,13 @@
-#include <system.h>
+// screen.c -- functions for printing, clearing, and printing characters to
+// the screen
 
-#define WHITE_ON_BLACK 0x0F
+#include "common.h"
+#include "screen.h"
+
 #define BS  0x08
 #define TAB 0x09
 #define CR  0x0D
 #define NL  0x0A
-
-void puthex(int h);
-void print_hexdigit(int d);
 
 /* These define our textpointer, our background and foreground colors
  * (attributes), and x and y cursor coordinates */
@@ -130,7 +130,7 @@ void cls()
     move_csr();
 }
 
-void putch(unsigned char c)
+void putch(char c)
 {
     unsigned short *where;
     unsigned att = attrib << 8;  // black BG, white FG
@@ -261,7 +261,7 @@ void settextcolor(unsigned char forecolor, unsigned char backcolor)
 }
 
 /* Sets our text-mode VGA pointer, then clears the screen for us */
-void init_video(void)
+void init_video()
 {
     textmemptr = (unsigned short *)0xB8000;
     cls();

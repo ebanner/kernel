@@ -1,4 +1,7 @@
-#include <system.h>
+// idt.c -- structs that define an IDT entry and the IDT itself
+//       -- funtions for initializing and inserting an entry into the IDT
+
+#include "common.h"
 
 /* Defines an entry in the IDT */
 struct idt_entry {
