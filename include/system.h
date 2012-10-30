@@ -9,8 +9,8 @@ extern unsigned char *memset(unsigned char *dest, unsigned char val, int count);
 extern unsigned short *memcpyw(unsigned short *dest, const unsigned short *src, int count);
 extern unsigned short *memsetw(unsigned short *dest, unsigned short val, int count);
 extern int strlen(const char *str);
-extern unsigned char inportb(unsigned short _port);
-extern void outportb(unsigned short _port, unsigned char _data);
+extern unsigned char inb(unsigned short _port);
+extern void outb(unsigned short _port, unsigned char _data);
 
 // stuff in screen.c
 extern void cls();

@@ -1,8 +1,6 @@
 #include <system.h>
 
-/* Expicitly state that all of the functions to handle exceptions thrown by
- * the processor are defined elsewhere (in start.asm */
-
+/* ISRs */
 extern void isr0(void);
 extern void isr1(void);
 extern void isr2(void);
@@ -36,12 +34,30 @@ extern void isr29(void);
 extern void isr30(void);
 extern void isr31(void);
 
-/* Set the first 32 entries in the IDT to the first 32 ISRs.  We set the
- * access flags to 0x8E.  This means the entry bit is present, is running in
- * ring 0 (kernel mode).  The value of 0x08 for the selector refers to the
- * kernel's Code Segment in the GDT. */
+/* IRQs */
+extern void irq0(void);
+extern void irq1(void);
+extern void irq2(void);
+extern void irq3(void);
+extern void irq4(void);
+extern void irq5(void);
+extern void irq6(void);
+extern void irq7(void);
+extern void irq8(void);
+extern void irq9(void);
+extern void irq10(void);
+extern void irq11(void);
+extern void irq12(void);
+extern void irq13(void);
+extern void irq14(void);
+extern void irq15(void);
+
 void idt_init()
 {
+    /* Set the first 32 entries in the IDT to the first 32 ISRs.  We set the
+     * access flags to 0x8E.  This means the entry bit is present, is running in
+     * ring 0 (kernel mode).  The value of 0x08 for the selector refers to the
+     * kernel's Code Segment in the GDT. */
     idt_set_gate(0,  (unsigned int)isr0,  0x08, 0x8E);
     idt_set_gate(1,  (unsigned int)isr1,  0x08, 0x8E);
     idt_set_gate(2,  (unsigned int)isr2,  0x08, 0x8E);
@@ -74,6 +90,19 @@ void idt_init()
     idt_set_gate(29, (unsigned int)isr29, 0x08, 0x8E);
     idt_set_gate(30, (unsigned int)isr30, 0x08, 0x8E);
     idt_set_gate(31, (unsigned int)isr31, 0x08, 0x8E);
+
+    /* Remap the IRQ table */
+    //outb(0x20, 0x11);
+    //outb(0xA0, 0x11);
+    //outb(0x21, 0x20);
+    //outb(0xA1, 0x28);
+    //outb(0x21, 0x04);
+    //outb(0xA1, 0x02);
+    //outb(0x21, 0x01);
+    //outb(0xA1, 0x01);
+    //outb(0x21, 0x0);
+    //outb(0xA1, 0x0);
+
 }
 
 /* Every ISR will call this function after an exception has occurred.  This

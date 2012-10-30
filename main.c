@@ -58,13 +58,13 @@ int strlen(const char *str)
 /* Receives a byte from an I/O location.  We will use this later on for
  * reading from the I/O ports to get data form devices such as the keyboard.
  * */
-unsigned char inportb(unsigned short _port)
+unsigned char inb(unsigned short port)
 {
     unsigned char rv;
 
     __asm__ __volatile__ ("inb %1, %0" 
             : "=a" (rv) 
-            : "Nd" (_port));
+            : "Nd" (port));
 
     return rv;
 }
@@ -74,11 +74,11 @@ unsigned char inportb(unsigned short _port)
  * in the eax register before the asm command is issued and `Nd' allows for
  * one-byte constant values to be assembled as constants, freeing the edx
  * register for other cases. */
-void outportb(unsigned short _port, unsigned char _data)
+void outb(unsigned short port, unsigned char data)
 {
     __asm__ __volatile__ ("outb %1, %0" 
             : /* no output registers */
-            : "Nd" (_port), "a" (_data)
+            : "Nd" (port), "a" (data)
             ); 
 }
 

@@ -103,10 +103,10 @@ void move_csr(void)
      * that show where the hardware cursor is to be `blinking'.  To learn more,
      * look at some VGA specific programming documents.  A great start to
      * graphics: http://www.brackeen.com/home/vga */
-    outportb(0x3D4, 14);
-    outportb(0x3D5, offset >> 8);
-    outportb(0x3D4, 15);
-    outportb(0x3D5, offset);
+    outb(0x3D4, 14);
+    outb(0x3D5, offset >> 8);
+    outb(0x3D4, 15);
+    outb(0x3D5, offset);
 }
 
 void cls()

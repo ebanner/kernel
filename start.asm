@@ -362,6 +362,166 @@ isr_common_stub:
     sti          ; enable iterrupts agains
     iret         ; Pops 5 things at once: cs, eip, eflags, ss, and esp.
 
+; remap the IRQs that the PIC sends to the processor
+; currently, IRQ0 to IRQ7 are mapped to IDT entries 8-15
+; further, IRQ8 to IRQ15 are mapped to IDT entries 0x70-0x78
+; we wish to map IRQ0 to IRQ15 to 0x20-0x2F
+global irq0
+global irq1
+global irq2
+global irq3
+global irq4
+global irq5
+global irq6
+global irq7
+global irq8
+global irq9
+global irq10
+global irq11
+global irq12
+global irq13
+global irq14
+global irq15
+
+; 32: IRQ0
+irq0:
+    cli          ; disable interrupts
+    push byte 0  ; neither the CPU nor the PIC pushes an error value on the
+    push byte 32 ; stack, so we push on a dummy value to be consistent
+    jmp irq_common_stub
+
+; 33: IRQ1
+irq1:
+    cli          ; disable interrupts
+    push byte 0  ; neither the CPU nor the PIC pushes an error value on the
+    push byte 33 ; stack, so we push on a dummy value to be consistent
+    jmp irq_common_stub
+
+; 34: IRQ2
+irq2:
+    cli          ; disable interrupts
+    push byte 0  ; neither the CPU nor the PIC pushes an error value on the
+    push byte 34 ; stack, so we push on a dummy value to be consistent
+    jmp irq_common_stub
+
+; 35: IRQ3
+irq3:
+    cli          ; disable interrupts
+    push byte 0  ; neither the CPU nor the PIC pushes an error value on the
+    push byte 35 ; stack, so we push on a dummy value to be consistent
+    jmp irq_common_stub
+
+; 36: IRQ4
+irq4:
+    cli          ; disable interrupts
+    push byte 0  ; neither the CPU nor the PIC pushes an error value on the
+    push byte 36 ; stack, so we push on a dummy value to be consistent
+    jmp irq_common_stub
+
+; 37: IRQ5
+irq5:
+    cli          ; disable interrupts
+    push byte 0  ; neither the CPU nor the PIC pushes an error value on the
+    push byte 37 ; stack, so we push on a dummy value to be consistent
+    jmp irq_common_stub
+
+; 38: IRQ6
+irq6:
+    cli          ; disable interrupts
+    push byte 0  ; neither the CPU nor the PIC pushes an error value on the
+    push byte 38 ; stack, so we push on a dummy value to be consistent
+    jmp irq_common_stub
+
+; 39: IRQ7
+irq7:
+    cli          ; disable interrupts
+    push byte 0  ; neither the CPU nor the PIC pushes an error value on the
+    push byte 39 ; stack, so we push on a dummy value to be consistent
+    jmp irq_common_stub
+
+; 40: IRQ8
+irq8:
+    cli          ; disable interrupts
+    push byte 0  ; neither the CPU nor the PIC pushes an error value on the
+    push byte 40 ; stack, so we push on a dummy value to be consistent
+    jmp irq_common_stub
+
+; 41: IRQ9
+irq9:
+    cli          ; disable interrupts
+    push byte 0  ; neither the CPU nor the PIC pushes an error value on the
+    push byte 41 ; stack, so we push on a dummy value to be consistent
+    jmp irq_common_stub
+
+; 42: IRQ10
+irq10:
+    cli          ; disable interrupts
+    push byte 0  ; neither the CPU nor the PIC pushes an error value on the
+    push byte 42 ; stack, so we push on a dummy value to be consistent
+    jmp irq_common_stub
+
+; 43: IRQ11
+irq11:
+    cli          ; disable interrupts
+    push byte 0  ; neither the CPU nor the PIC pushes an error value on the
+    push byte 43 ; stack, so we push on a dummy value to be consistent
+    jmp irq_common_stub
+
+; 44: IRQ12
+irq12:
+    cli          ; disable interrupts
+    push byte 0  ; neither the CPU nor the PIC pushes an error value on the
+    push byte 44 ; stack, so we push on a dummy value to be consistent
+    jmp irq_common_stub
+
+; 45: IRQ13
+irq13:
+    cli          ; disable interrupts
+    push byte 0  ; neither the CPU nor the PIC pushes an error value on the
+    push byte 45 ; stack, so we push on a dummy value to be consistent
+    jmp irq_common_stub
+
+; 46: IRQ14
+irq14:
+    cli          ; disable interrupts
+    push byte 0  ; neither the CPU nor the PIC pushes an error value on the
+    push byte 46 ; stack, so we push on a dummy value to be consistent
+    jmp irq_common_stub
+
+; 47: IRQ15
+irq15:
+    cli          ; disable interrupts
+    push byte 0  ; neither the CPU nor the PIC pushes an error value on the
+    push byte 47 ; stack, so we push on a dummy value to be consistent
+    jmp irq_common_stub
+
+; Here is a stub for handling IRQ-based ISRs.  Here we save the state of the
+; processor and call our general IRQ handler (located in irq.c)
+irq_common_stub:
+    pusha        ; pushes edi, esi, ebp, esp, ebx, edx, ecx, eax
+
+    mov ax, ds
+    push eax     ; save the data segment in eax
+
+    mov ax, 0x10 ; load the kernel data segment descriptor
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+
+    ;call irq_handler  ; C function that handles IRQs
+
+    pop ebx      ; reload original data segment descriptors
+    mov ds, bx
+    mov es, bx
+    mov fs, bx
+    mov gs, bx
+
+    popa              ; analog of pusha
+    add esp, 8        ; leap frog past two values we pushed on the stack before
+    sti               ; enable interrupts again
+    iret              ; pops everything that the processor automagically
+                      ; pushed when the IRQ was called (cs, eip, eflags, ss, esp)
 
 ; Here is the definition of our BSS section. Right now, we'll use
 ; it just to store the stack. Remember that a stack actually grows
