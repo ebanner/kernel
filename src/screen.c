@@ -1,8 +1,8 @@
-// screen.c -- functions for printing, clearing, and printing characters to
-// the screen
-
 #include "common.h"
 #include "screen.h"
+
+// screen.c -- functions for printing, clearing, and printing characters to
+// the screen
 
 #define BS  0x08
 #define TAB 0x09

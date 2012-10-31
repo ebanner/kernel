@@ -1,10 +1,10 @@
-// main.c -- initializes and populates the GDT and IDT
-//        -- tests for various functionaliy like catching interrupts
-//        -- jumps into an endless loop
-
 #include "gdt.h"
 #include "idt.h"
 #include "screen.h"
+
+// main.c -- initializes and populates the GDT and IDT
+//        -- tests for various functionaliy like catching interrupts
+//        -- jumps into an endless loop
 
 /* start.asm hands over control to this function immediately after setting esp
  * to point to our 8K stack. */

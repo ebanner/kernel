@@ -1,8 +1,8 @@
-// irss.c -- initializes the IDT with ISR entries
-//        -- function for handling executing ISRs
-
 #include "idt.h"
 #include "screen.h"
+
+// irss.c -- initializes the IDT with ISR entries
+//        -- function for handling executing ISRs
 
 /* ISRs */
 extern void isr0(void);

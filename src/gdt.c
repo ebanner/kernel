@@ -1,8 +1,7 @@
 // gdt.c -- functions for setting up and inserting descriptors into the GDT
 
-/* Defines a GDT entry.  We say `packed', because it prevents the compiler from
- * doing things that it thinks is best.  `Packing' prevents compiler
- * optimization. */
+/* Defines a GDT entry.  We use the attribute `packed' to tell gcc not to
+ * change any of the alignment in the structure. */
 struct gdt_entry {
     unsigned short limit_low;
     unsigned short base_low;
