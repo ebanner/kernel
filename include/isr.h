@@ -1,5 +1,5 @@
 // isr.h -- defines a struct that captures the stack at the time an ISR or IRQ
-// interrupt handler function is entered
+// interrupt handler function is entered.
 
 #ifndef ISR_H
 #define ISR_H

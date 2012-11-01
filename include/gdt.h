@@ -1,5 +1,5 @@
-// gdt.h -- defines GDT entry is and the GDT itself
-//       -- declares a function to set up the GDT
+// gdt.h -- defines a GDT entry and the GDT itself.
+//       -- declares a function to set up the GDT.
 
 #ifndef GDT_H
 #define GDT_H
@@ -24,7 +24,7 @@ struct gdt_ptr
     unsigned int base;
 } __attribute__((packed));
 
-/* Our GDT, with 3 entries, and finally our special GDT pointer */
+/* Our GDT, with 5 entries, and finally our special GDT pointer */
 struct gdt_entry gdt[5];
 struct gdt_ptr gp;
 
