@@ -3,39 +3,47 @@ LD = ld
 ASM = nasm
 INCLUDE = ../include
 
-objects = boot.o main.o screen.o gdt.o idt.o isr.o common.o
+objects = boot.o interrupts.o descriptors.o \
+	  main.o common.o screen.o gdt.o idt.o isr.o
+
+includes = $(INCLUDE)/gdt.h \
+	   $(INCLUDE)/common.h \
+	   $(INCLUDE)/idt.h \
+	   $(INCLUDE)/isr.h \
+	   $(INCLUDE)/screen.h
 
 CFLAGS = -Wall -nostdlib -nostdinc -fno-builtin \
 	 -fno-stack-protector -I../include -c
 
-
+# *the* target
 kernel : $(objects) link.ld
 	$(LD) -T link.ld -o kernel $(objects)
 
-boot.o :
+boot.o : boot.s
 	$(ASM) -f elf -o boot.o boot.s
+	
+interrupts.o : interrupts.s
+	$(ASM) -f elf -o interrupts.o interrupts.s
 
-main.o : main.c boot.s gdt.c idt.c isr.c \
-    $(INCLUDE)/gdt.h $(INCLUDE)/gdt.h $(INCLUDE)/screen.h
+descriptors.o : descriptors.s
+	$(ASM) -f elf -o descriptors.o descriptors.s
+
+main.o : main.c gdt.c idt.c isr.c $(includes)
 	$(CC) $(CFLAGS) -o main.o main.c
 
 common.o : common.c 
 	$(CC) $(CFLAGS) -o common.o common.c
 
-screen.o : boot.s screen.c \
-    $(INCLUDE)/common.h $(INCLUDE)/screen.h
+screen.o : screen.c $(includes)
 	$(CC) $(CFLAGS) -o screen.o screen.c
 
-gdt.o : boot.s gdt.c \
-    $(INCLUDE)/gdt.h
+gdt.o : descriptors.s gdt.c $(includes)
 	$(CC) $(CFLAGS) -o gdt.o gdt.c
 
-idt.o : boot.s idt.c \
-    $(INCLUDE)/common.h $(INCLUDE)/idt.h
+idt.o : descriptors.s idt.c $(includes)
 	$(CC) $(CFLAGS) -o idt.o idt.c
 
-isr.o : boot.s isr.c idt.c \
-    $(INCLUDE)/isr.h $(INCLUDE)/screen.h
+isr.o : isr.c idt.c $(includes)
 	$(CC) $(CFLAGS) -o isr.o isr.c
 
 clean :

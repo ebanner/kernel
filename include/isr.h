@@ -1,8 +1,11 @@
+// isr.h -- defines a struct that captures the stack at the time an ISR or IRQ
+// interrupt handler function is entered
+
 #ifndef ISR_H
 #define ISR_H
 
-// this is a snapshot of the stack when an IRQ or ISR handler function is
-// entered
+/* This is a snapshot of the stack when an IRQ or ISR handler function is
+ * entered. */
 struct registers {
     unsigned int ds;                                      /* Data Segment selector */
     unsigned int edi, esi, ebp, esp, ebx, edx, ecx, eax;  /* pushed by pusha */

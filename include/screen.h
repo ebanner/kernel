@@ -1,4 +1,4 @@
-// screen.h -- functions that set up the screen and allow printing
+// screen.h -- functions that set up the screen and allow for printing
 
 #ifndef SCREEN_H
 #define SCREEN_H

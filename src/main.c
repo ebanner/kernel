@@ -6,8 +6,7 @@
 //        -- tests for various functionaliy like catching interrupts
 //        -- jumps into an endless loop
 
-/* start.asm hands over control to this function immediately after setting esp
- * to point to our 8K stack. */
+/* function called from `boot.asm' */
 int main()
 {
     /* set up the Global Descriptor Table */

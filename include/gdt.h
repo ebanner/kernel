@@ -1,3 +1,6 @@
+// gdt.h -- defines GDT entry is and the GDT itself
+//       -- declares a function to set up the GDT
+
 #ifndef GDT_H
 #define GDT_H
 

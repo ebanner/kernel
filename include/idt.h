@@ -1,3 +1,7 @@
+// idt.h -- declares functions to set up the IDT and populate it
+//       -- defines structs that capture an IDT entry and the IDT itself
+//       -- declares ISRs and IRQs defined in `descriptors.s'
+
 #ifndef IDT_H
 #define IDT_H
 

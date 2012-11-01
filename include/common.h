@@ -1,4 +1,5 @@
-// common.h -- Declares some commonly used functions and structs
+// common.h -- declares some functions so generic, we had to put them in a
+// header file called `common.c'
 
 #ifndef COMMON_H
 #define COMMON_H
