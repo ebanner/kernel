@@ -1,8 +1,8 @@
-#include "common.h"
-#include "idt.h"
-
 // idt.c -- structs that define an IDT entry and the IDT itself
 //       -- funtions for initializing and inserting an entry into the IDT
+
+#include "common.h"
+#include "idt.h"
 
 /* This exists in `start.asm', and is used to load our IDT */
 extern void idt_load();

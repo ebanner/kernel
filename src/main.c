@@ -1,10 +1,10 @@
-#include "gdt.h"
-#include "idt.h"
-#include "screen.h"
-
 // main.c -- initializes and populates the GDT and IDT
 //        -- tests for various functionaliy like catching interrupts
 //        -- jumps into an endless loop
+
+#include "gdt.h"
+#include "idt.h"
+#include "screen.h"
 
 /* function called from `boot.asm' */
 int main()

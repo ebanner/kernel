@@ -15,7 +15,7 @@ includes = $(INCLUDE)/gdt.h \
 CFLAGS = -Wall -nostdlib -nostdinc -fno-builtin \
 	 -fno-stack-protector -I../include -c
 
-# *the* target
+# the target
 kernel : $(objects) link.ld
 	$(LD) -T link.ld -o kernel $(objects)
 

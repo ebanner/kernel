@@ -1,6 +1,5 @@
 /* link.ld -- Linker script for the kernel.
- * Ensures everyting is loaded into the correct place.
- */
+ * Ensures everyting is loaded into the correct place. */
 
 ENTRY(start)
 SECTIONS

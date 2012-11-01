@@ -1,7 +1,7 @@
+// isr.c -- provides a function for handling ISRs
+
 #include "isr.h"
 #include "screen.h"
-
-// isr.c -- provides a function for handling ISRs
 
 /* Every ISR will call this function after an exception has occurred.  This
  * provides an explicit way of telling which interrupt happened.  For now, we
