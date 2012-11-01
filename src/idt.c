@@ -1,30 +1,8 @@
 #include "common.h"
+#include "idt.h"
 
 // idt.c -- structs that define an IDT entry and the IDT itself
 //       -- funtions for initializing and inserting an entry into the IDT
-
-/* Defines an entry in the IDT */
-struct idt_entry {
-    unsigned short base_lo;
-    unsigned short sel;         /* Our kernel segment always goes here! */
-    unsigned char zero;         /* This will ALWAYS be set to 0! */
-    unsigned char flags;        /* Set using the above table! */
-    unsigned short base_hi;
-} __attribute__((packed));
-
-/* Defines a pointer to an array of interrupt handlers.  We package the limit
- * and base like this so we can hand this struct to `lidt'*/
-struct idt_ptr {
-    unsigned short limit;
-    unsigned int base;
-} __attribute__((packed));
-
-/* Declare an IDT of 256 entries.  If any unidentified IDT entry is hit, it
- * normally will cuase an ``Unhandled Interrupt" exception.  Any descriptor
- * for which the `presence' bit is cleard (0) will generate an ``Unhandled
- * Interrupt" exception */
-struct idt_entry idt[256];
-struct idt_ptr idtp;
 
 /* This exists in `start.asm', and is used to load our IDT */
 extern void idt_load();
@@ -64,4 +42,56 @@ void idt_install()
 
     /* Points the processor's internal register to the new IDT */
     idt_load();
+}
+
+void init_idt()
+{
+    /* Set the first 32 entries in the IDT to the first 32 ISRs.  We set the
+     * access flags to 0x8E.  This means the entry bit is present, is running in
+     * ring 0 (kernel mode).  The value of 0x08 for the selector refers to the
+     * kernel's Code Segment in the GDT. */
+    idt_set_gate(0,  (unsigned int)isr0,  0x08, 0x8E);
+    idt_set_gate(1,  (unsigned int)isr1,  0x08, 0x8E);
+    idt_set_gate(2,  (unsigned int)isr2,  0x08, 0x8E);
+    idt_set_gate(3,  (unsigned int)isr3,  0x08, 0x8E);
+    idt_set_gate(4,  (unsigned int)isr4,  0x08, 0x8E);
+    idt_set_gate(5,  (unsigned int)isr5,  0x08, 0x8E);
+    idt_set_gate(6,  (unsigned int)isr6,  0x08, 0x8E);
+    idt_set_gate(7,  (unsigned int)isr7,  0x08, 0x8E);
+    idt_set_gate(8,  (unsigned int)isr8,  0x08, 0x8E);
+    idt_set_gate(9,  (unsigned int)isr9,  0x08, 0x8E);
+    idt_set_gate(10, (unsigned int)isr10, 0x08, 0x8E);
+    idt_set_gate(11, (unsigned int)isr11, 0x08, 0x8E);
+    idt_set_gate(12, (unsigned int)isr12, 0x08, 0x8E);
+    idt_set_gate(13, (unsigned int)isr13, 0x08, 0x8E);
+    idt_set_gate(14, (unsigned int)isr14, 0x08, 0x8E);
+    idt_set_gate(15, (unsigned int)isr15, 0x08, 0x8E);
+    idt_set_gate(16, (unsigned int)isr16, 0x08, 0x8E);
+    idt_set_gate(17, (unsigned int)isr17, 0x08, 0x8E);
+    idt_set_gate(18, (unsigned int)isr18, 0x08, 0x8E);
+    idt_set_gate(19, (unsigned int)isr19, 0x08, 0x8E);
+    idt_set_gate(20, (unsigned int)isr20, 0x08, 0x8E);
+    idt_set_gate(21, (unsigned int)isr21, 0x08, 0x8E);
+    idt_set_gate(22, (unsigned int)isr22, 0x08, 0x8E);
+    idt_set_gate(23, (unsigned int)isr23, 0x08, 0x8E);
+    idt_set_gate(24, (unsigned int)isr24, 0x08, 0x8E);
+    idt_set_gate(25, (unsigned int)isr25, 0x08, 0x8E);
+    idt_set_gate(26, (unsigned int)isr26, 0x08, 0x8E);
+    idt_set_gate(27, (unsigned int)isr27, 0x08, 0x8E);
+    idt_set_gate(28, (unsigned int)isr28, 0x08, 0x8E);
+    idt_set_gate(29, (unsigned int)isr29, 0x08, 0x8E);
+    idt_set_gate(30, (unsigned int)isr30, 0x08, 0x8E);
+    idt_set_gate(31, (unsigned int)isr31, 0x08, 0x8E);
+
+    /* Remap the IRQ table */
+    //outb(0x20, 0x11);
+    //outb(0xA0, 0x11);
+    //outb(0x21, 0x20);
+    //outb(0xA1, 0x28);
+    //outb(0x21, 0x04);
+    //outb(0xA1, 0x02);
+    //outb(0x21, 0x01);
+    //outb(0xA1, 0x01);
+    //outb(0x21, 0x0);
+    //outb(0xA1, 0x0);
 }

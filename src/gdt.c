@@ -1,28 +1,8 @@
 // gdt.c -- functions for setting up and inserting descriptors into the GDT
 
-/* Defines a GDT entry.  We use the attribute `packed' to tell gcc not to
- * change any of the alignment in the structure. */
-struct gdt_entry {
-    unsigned short limit_low;
-    unsigned short base_low;
-    unsigned char base_middle;
-    unsigned char access;
-    unsigned char granularity;
-    unsigned char base_high;
-} __attribute__((packed));
+#include "gdt.h"
 
-/* Special pointer which includes the limit [(max bytes taken up by GDT)-1] */
-struct gdt_ptr
-{
-    unsigned short limit;
-    unsigned int base;
-} __attribute__((packed));
-
-/* Our GDT, with 3 entries, and finally our special GDT pointer */
-struct gdt_entry gdt[3];
-struct gdt_ptr gp;
-
-/* This will be a function in `start.esm'.  We use this to properly reload the
+/* This will be a function in `boot.esm'.  We use this to properly reload the
  * new segment registers */
 extern void gdt_flush();
 
@@ -53,7 +33,7 @@ void gdt_set_gate(int num, unsigned int base, unsigned int limit, unsigned char 
 void gdt_install()
 {
     /* Setup the GDT pointer and limit */
-    gp.limit = ( sizeof(struct gdt_entry) * 3) - 1;  // zero-indexed--hence the need to subtract 1
+    gp.limit = ( sizeof(struct gdt_entry) * 5) - 1;  // zero-indexed--hence the need to subtract 1
     gp.base = (int)&gdt;
 
     /* Our NULL descriptor */
@@ -66,7 +46,7 @@ void gdt_install()
             0           /* FLAGS: `limit' is in 1B blocks, 16 bit protected mode */
             );     
 
-    /* Code Segment descriptor */
+    /* Kernel Code Segment descriptor */
     gdt_set_gate(
             1,          /* NUM:    first entry in the GDT */
             0,          /* BASE:   base address of 0 */
@@ -76,12 +56,32 @@ void gdt_install()
             0xCF        /* FLAGS: `limit' is in 4K blocks, 32 bit protected mode */
             );
 
-    /* Data Segment descriptor */
+    /* Kernel Data Segment descriptor */
     gdt_set_gate(
             2,          /* NUM:    second entry in the GDT */
             0,          /* BASE:   base address of 0 */
             0xFFFFFFFF, /* LIMIT:  spans all of memory */
             0x92,       /* ACCESS: present, kernel ring 0, NOT executable, can only 
+                            be read from ring 0, READ/WRITE, access bit is 0 */
+            0xCF        /* FLAGS: `limit' is in 4K blocks, 32 bit protected mode */
+            );
+
+    /* User mode Code Segment descriptor */
+    gdt_set_gate(
+            3,          /* NUM:    first entry in the GDT */
+            0,          /* BASE:   base address of 0 */
+            0xFFFFFFFF, /* LIMIT:  spans all of memory */
+            0xFA,       /* ACCESS: present, kernel ring 3, executable, can only 
+                            be executed from ring 0, READ ONLY, access bit is 0 */
+            0xCF        /* FLAGS: `limit' is in 4K blocks, 32 bit protected mode */
+            );
+
+    /* User mode Data Segment descriptor */
+    gdt_set_gate(
+            4,          /* NUM:    second entry in the GDT */
+            0,          /* BASE:   base address of 0 */
+            0xFFFFFFFF, /* LIMIT:  spans all of memory */
+            0xF2,       /* ACCESS: present, kernel ring 3, NOT executable, can only 
                             be read from ring 0, READ/WRITE, access bit is 0 */
             0xCF        /* FLAGS: `limit' is in 4K blocks, 32 bit protected mode */
             );

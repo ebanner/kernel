@@ -16,7 +16,7 @@ int main()
     /* set up the Interrupt Descriptor Table */
     idt_install();
     /* populate the IDT with 32 ISRs */
-    idt_init();
+    init_idt();
 
     /* clear the screen and set up a pointer to the VGA buffer */
     init_video();

@@ -1,8 +1,8 @@
-#include "common.h"
-#include "screen.h"
-
 // screen.c -- functions for printing, clearing, and printing characters to
 // the screen
+
+#include "common.h"
+#include "screen.h"
 
 #define BS  0x08
 #define TAB 0x09
@@ -85,7 +85,7 @@ void scroll(void)
  * the last character pressed */
 void move_csr(void)
 {
-    unsigned offset;
+    unsigned short offset;
 
     /* The equation for finding the index in a linear chunk of memory can be
      * represented by:
@@ -103,10 +103,13 @@ void move_csr(void)
      * that show where the hardware cursor is to be `blinking'.  To learn more,
      * look at some VGA specific programming documents.  A great start to
      * graphics: http://www.brackeen.com/home/vga */
+
+    /* tell the VGA board we are setting the high cursor byte */
     outb(0x3D4, 14);
-    outb(0x3D5, offset >> 8);
+    outb(0x3D5, offset >> 8); /* send the high cursor byte */
+    /* tell the VGA board we are setting the low cursor byte */
     outb(0x3D4, 15);
-    outb(0x3D5, offset);
+    outb(0x3D5, offset); /* send the low cursor byte */
 }
 
 void cls()
@@ -178,9 +181,8 @@ void putch(char c)
         csr_col = 0;
     }
 
-    /* Scroll the screen if needed and finally move the cursor */
-    scroll();
-    move_csr();
+    scroll(); /* Scroll the screen if needed */
+    move_csr(); /* update the cursor position */
 }
 
 /* Uses the above routine to output a string... */
