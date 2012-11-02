@@ -5,6 +5,14 @@
 #ifndef IDT_H
 #define IDT_H
 
+#define MASTER 0x20
+#define SLAVE  0xA0
+#define MASTER_CMD  MASTER
+#define MASTER_DATA (MASTER_CMD+1)
+#define SLAVE_CMD   SLAVE
+#define SLAVE_DATA  (SLAVE+1)
+#define INIT 0x11
+
 /* functions for initializing the IDT */
 extern void idt_install();
 extern void init_idt();

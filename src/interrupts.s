@@ -265,7 +265,7 @@ isr31:
 ; thrown.  This saves the state of the processor on the stack so we can execute
 ; the ISR.  This function also sets up kernel mode segments, calls
 ; the C-level fault handler, and finally restores the stack frame.
-extern fault_handler
+[EXTERN] isr_handler
 isr_common_stub:
     pusha        ; pushes all general purpose registers onto the stack in the
                  ; following order: eax, ecx, edx, ebx, esp, ebp, esi, edi, 
@@ -278,7 +278,7 @@ isr_common_stub:
     mov fs, ax
     mov gs, ax
 
-    call fault_handler ; Call the C function to handle a fault.
+    call isr_handler ; Call the C function to handle a fault.
 
     pop eax      ; reload the original Data Segment descriptor
     mov ds, ax   ; restore data segment and other segment registers
@@ -293,10 +293,9 @@ isr_common_stub:
     iret         ; Pops 5 things at once: cs, eip, eflags, ss, and esp.
 
 
-; remap the IRQs that the PIC sends to the processor
-; currently, IRQ0 to IRQ7 are mapped to IDT entries 8-15
-; further, IRQ8 to IRQ15 are mapped to IDT entries 0x70-0x78
-; we wish to map IRQ0 to IRQ15 to 0x20-0x2F
+; ISR entries 32-47
+; These entries correspond to IRQs 0-15, but are mapped to 32-47 to not
+; conflict with the first 32 ISRs already in the IDT.
 [GLOBAL] irq0
 [GLOBAL] irq1
 [GLOBAL] irq2
@@ -427,8 +426,10 @@ irq15:
     jmp irq_common_stub
 
 
-; Here is a stub for handling IRQ-based ISRs.  Here we save the state of the
-; processor and call our general IRQ handler (located in irq.c)
+[EXTERN irq_handler]
+; Here is a stub for handling IRQs.  Here we save the state of the
+; processor and call our general IRQ handler (located in irq.c).  This
+; function also sets up kernel mode segments and restores the stack frame.
 irq_common_stub:
     pusha        ; pushes edi, esi, ebp, esp, ebx, edx, ecx, eax
 
@@ -441,7 +442,7 @@ irq_common_stub:
     mov fs, ax
     mov gs, ax
 
-    ;call irq_handler  ; C function that handles IRQs
+    call irq_handler  ; C function that handles IRQs
 
     pop ebx      ; reload original data segment descriptors
     mov ds, bx
@@ -449,8 +450,9 @@ irq_common_stub:
     mov fs, bx
     mov gs, bx
 
-    popa              ; analog of pusha
-    add esp, 8        ; leap frog past two values we pushed on the stack before
+    popa              ; analog of `pusha'
+    add esp, 8        ; leap frog past two values we pushed on the stack
+                      ; before calling `irq_handler'
     sti               ; enable interrupts again
     iret              ; pops everything that the processor automagically
                       ; pushed when the IRQ was called (cs, eip, eflags, ss, esp)

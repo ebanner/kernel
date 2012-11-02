@@ -5,6 +5,7 @@
 #include "gdt.h"
 #include "idt.h"
 #include "screen.h"
+#include "timer.h"
 
 /* function called from `boot.asm' */
 int main()
@@ -28,14 +29,17 @@ int main()
     putch('\n');
 
     /* will cause interrupts 3 and 4 */
-    __asm__ __volatile__ ("int $0x3");
-    __asm__ __volatile__ ("int $0x4");
+    //__asm__ __volatile__ ("int $0x3");
+    //__asm__ __volatile__ ("int $0x4");
 
     /* Testing to see if the `Divide by zero' exception is caught correctly by
      * the IDT.  Currently there is no entry in the IDT for dividing by zero,
      * so the machine resets endlessly.  */
     //puts((unsigned char *)"\nDividing by zero... ");
     //putint(5/0);
+    
+    /* initialize the timer to give an IRQ every second */
+    init_timer(50);
 
     /* jump into an endless loop */
     for (;;);

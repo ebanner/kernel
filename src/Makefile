@@ -4,7 +4,7 @@ ASM = nasm
 INCLUDE = ../include
 
 objects = boot.o interrupts.o descriptors.o \
-	  main.o common.o screen.o gdt.o idt.o isr.o
+	  main.o common.o screen.o gdt.o idt.o isr.o timer.o
 
 includes = $(INCLUDE)/gdt.h \
 	   $(INCLUDE)/common.h \
@@ -45,6 +45,9 @@ idt.o : descriptors.s idt.c $(includes)
 
 isr.o : isr.c idt.c $(includes)
 	$(CC) $(CFLAGS) -o isr.o isr.c
+
+timer.o : timer.c common.c $(includes)
+	$(CC) $(CFLAGS) -o timer.o timer.c
 
 clean :
 	rm kernel $(objects)

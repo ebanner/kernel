@@ -83,15 +83,64 @@ void init_idt()
     idt_set_gate(30, (unsigned int)isr30, 0x08, 0x8E);
     idt_set_gate(31, (unsigned int)isr31, 0x08, 0x8E);
 
-    /* Remap the IRQ table */
-    //outb(0x20, 0x11);
-    //outb(0xA0, 0x11);
-    //outb(0x21, 0x20);
-    //outb(0xA1, 0x28);
-    //outb(0x21, 0x04);
-    //outb(0xA1, 0x02);
-    //outb(0x21, 0x01);
-    //outb(0xA1, 0x01);
+    /* Remap the IRQ table.
+     *
+     * Currently, the Master and Slave PICs send IRQ values of 0x08-0x0F and
+     * 0x80-0x87 to the CPU currently.  We still send IRQs to the PICs (there
+     * are master and slave PICs) with these values, but we need the PICs to
+     * be able to map these numbers to another range in order to avoid
+     * confusing these IRQ values with the Exception values (currently we're
+     * using the first 31 (0x00-0x1F) values in the IDT for exceptions.
+     *
+     * We send the value of INIT (0x11) to the master PIC because it alerts
+     * the master PIC that the next 3 values we send to its data port will be:
+     *     1. Its new vector offset (instead of passing along the IRQ number
+     *        that we send it TO THE PROCESSOR, it will send the sum of the
+     *        IRQ number and the offset.
+     *     2. How it is wired to masters/slaves (tells the master that there
+     *        is a slave at IRQ n, and tells the slave its cascade identity).
+     *     3. Additional information about the environment (?)
+     */
+    outb(MASTER_CMD, INIT);
+    outb(SLAVE_CMD,  INIT);
+
+    /* offset each of the vectors by 0x20.
+     * so now instead of 0x08, 0x09, 0x10, ..., 0x0F, they'll be
+     *                   0x20, 0x21, 0x22, ..., 0x27. 
+     * now the ISRs the PIC sends won't conflict with our 31 ISRs already in
+     * the IDT. */
+    outb(MASTER_DATA, 0x20); 
+    outb(SLAVE_DATA,  0x28);  /* offset the slave IRQ values by 0x28 */
+
+    /* tell the master PIC that there is a slave PIC at IRQ2 (0000 0100) */
+    outb(MASTER_DATA, 0x04);
+    /* tell the slave PIC its cascade identity is 2 (0000 0010) */
+    outb(SLAVE_DATA,  0x02);
+
+    /* master's environment is 8086/88 (MCS-80/85) mode */
+    outb(MASTER_DATA, 0x01);
+    /* slaves's environment is 8086/88 (MCS-80/85) mode */
+    outb(SLAVE_DATA,  0x01);
+
+    /* this seems unnecessary... */
     //outb(0x21, 0x0);
     //outb(0xA1, 0x0);
+
+    /* Set the next 16 entries in the IDT to be the IRQs */
+    idt_set_gate(32, (unsigned int)irq0,  0x08, 0x8E);
+    idt_set_gate(33, (unsigned int)irq1,  0x08, 0x8E);
+    idt_set_gate(34, (unsigned int)irq2,  0x08, 0x8E);
+    idt_set_gate(35, (unsigned int)irq3,  0x08, 0x8E);
+    idt_set_gate(36, (unsigned int)irq4,  0x08, 0x8E);
+    idt_set_gate(37, (unsigned int)irq5,  0x08, 0x8E);
+    idt_set_gate(38, (unsigned int)irq6,  0x08, 0x8E);
+    idt_set_gate(39, (unsigned int)irq7,  0x08, 0x8E);
+    idt_set_gate(40, (unsigned int)irq8,  0x08, 0x8E);
+    idt_set_gate(41, (unsigned int)irq9,  0x08, 0x8E);
+    idt_set_gate(42, (unsigned int)irq10, 0x08, 0x8E);
+    idt_set_gate(43, (unsigned int)irq11, 0x08, 0x8E);
+    idt_set_gate(44, (unsigned int)irq12, 0x08, 0x8E);
+    idt_set_gate(45, (unsigned int)irq13, 0x08, 0x8E);
+    idt_set_gate(46, (unsigned int)irq14, 0x08, 0x8E);
+    idt_set_gate(47, (unsigned int)irq15, 0x08, 0x8E);
 }
