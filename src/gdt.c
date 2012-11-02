@@ -34,7 +34,7 @@ void gdt_install()
 {
     /* Setup the GDT pointer and limit */
     gp.limit = ( sizeof(struct gdt_entry) * 5) - 1;  // zero-indexed--hence the need to subtract 1
-    gp.base = (int)&gdt;
+    gp.base = (unsigned int)&gdt;
 
     /* Our NULL descriptor */
     gdt_set_gate(

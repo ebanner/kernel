@@ -4,6 +4,15 @@
 #include "screen.h"
 #include "common.h"
 
+/* an array of function pointers for every ISR */
+isr_t interrupt_handlers[256];
+
+void register_interrupt_handler(unsigned char n, isr_t handler)
+{
+    /* define the function to handle the n'th entry in the IDT */
+    interrupt_handlers[n] = handler;
+}
+
 /* Every ISR will call this function after an exception has occurred.  This
  * provides an explicit way of telling which interrupt happened.  For now, we
  * print the exception message and enter an inifinte loop.  Keep in mind that
@@ -35,8 +44,9 @@ void irq_handler(struct registers regs)
     /* In addition to sending an EOI (end of interrupt) to the master PIC, we
      * need to send an EOI to the slave PIC if the IRQ is greater than or
      * equal to 40 */
-    if (regs.int_no >= 40)
+    if (regs.int_no >= 40) {
         outb(SLAVE_PIC, EOI);
+    }
 
     outb(MASTER_PIC, EOI); /* send an EOI to the master PIC regardless */
 
@@ -47,10 +57,4 @@ void irq_handler(struct registers regs)
         /* call the function and give it the snapshot of the stack */
         handler(regs);
     }
-}
-
-void register_interrupt_handler(unsigned char n, isr_t handler)
-{
-    /* define the function to handle the n'th entry in the IDT */
-    interrupt_handlers[n] = handler;
 }

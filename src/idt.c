@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include "idt.h"
+#include "screen.h"
 
 /* This exists in `start.asm', and is used to load our IDT */
 extern void idt_load();
@@ -122,10 +123,11 @@ void init_idt()
     /* slaves's environment is 8086/88 (MCS-80/85) mode */
     outb(SLAVE_DATA,  0x01);
 
-    /* this seems unnecessary... */
-    //outb(0x21, 0x0);
-    //outb(0xA1, 0x0);
+    /* clear out the data ports for both the master and slave */
+    outb(MASTER_DATA, 0x00);
+    outb(SLAVE_DATA,  0x00);
 
+    puts("Setting the IRQs...\n");
     /* Set the next 16 entries in the IDT to be the IRQs */
     idt_set_gate(32, (unsigned int)irq0,  0x08, 0x8E);
     idt_set_gate(33, (unsigned int)irq1,  0x08, 0x8E);

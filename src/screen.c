@@ -23,7 +23,8 @@
  */
 unsigned short *textmemptr;
 int attrib = 0x0D;  /* white foreground, black background */
-int csr_row, csr_col = 0;
+int csr_row = 0;
+int csr_col = 0;
 
 /* Scrolls the screen */
 void scroll(void)
@@ -78,6 +79,8 @@ void scroll(void)
          * 22nd line... */
         //memsetw(textmemptr+(25-offset)*80, blank, 80);
         memsetw(textmemptr+(24*80), blank, 80);
+
+        csr_row = 24;
     }
 }
 

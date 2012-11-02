@@ -12,10 +12,16 @@ includes = $(INCLUDE)/gdt.h \
 	   $(INCLUDE)/isr.h \
 	   $(INCLUDE)/screen.h
 
+GRUB = ../grub
+bochs_files = $(GRUB)/stage1 $(GRUB)/stage2 $(GRUB)/pad kernel
+
 CFLAGS = -Wall -nostdlib -nostdinc -fno-builtin \
 	 -fno-stack-protector -I../include -c
 
-# the target
+# bochs target
+floppy.img : kernel
+	cat $(bochs_files) > floppy.img
+
 kernel : $(objects) link.ld
 	$(LD) -T link.ld -o kernel $(objects)
 
@@ -46,7 +52,7 @@ idt.o : descriptors.s idt.c $(includes)
 isr.o : isr.c idt.c $(includes)
 	$(CC) $(CFLAGS) -o isr.o isr.c
 
-timer.o : timer.c common.c $(includes)
+timer.o : timer.c common.c isr.c screen.c $(includes)
 	$(CC) $(CFLAGS) -o timer.o timer.c
 
 clean :
