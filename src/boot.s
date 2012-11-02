@@ -10,9 +10,9 @@ MULTIBOOT_CHECKSUM	equ -(MULTIBOOT_HEADER_MAGIC + MULTIBOOT_HEADER_FLAGS)
 [BITS 32]
 
 [GLOBAL mboot]
-[EXTERN code]  /* defined in link.ld */
-[EXTERN bss]   /* defined in link.ld */
-[EXTERN end]   /* defined in link.ld */
+[EXTERN code]  ; defined in link.ld
+[EXTERN bss]   ; defined in link.ld
+[EXTERN end]   ; defined in link.ld
 
 mboot:
     ; This is the GRUB Multiboot header.  Allocate dword size values.

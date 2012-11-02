@@ -1,38 +1,38 @@
 ; interrupts.s -- provides all of the ISR & IRQ entry points
 
 ; allows `idt_set_gate' in `idt.c' to know where these ISRs live
-[GLOBAL] isr0
-[GLOBAL] isr1
-[GLOBAL] isr2
-[GLOBAL] isr3
-[GLOBAL] isr4
-[GLOBAL] isr5
-[GLOBAL] isr6
-[GLOBAL] isr7
-[GLOBAL] isr8
-[GLOBAL] isr9
-[GLOBAL] isr10
-[GLOBAL] isr11
-[GLOBAL] isr12
-[GLOBAL] isr13
-[GLOBAL] isr14
-[GLOBAL] isr15
-[GLOBAL] isr16
-[GLOBAL] isr17
-[GLOBAL] isr18
-[GLOBAL] isr19
-[GLOBAL] isr20
-[GLOBAL] isr21
-[GLOBAL] isr22
-[GLOBAL] isr23
-[GLOBAL] isr24
-[GLOBAL] isr25
-[GLOBAL] isr26
-[GLOBAL] isr27
-[GLOBAL] isr28
-[GLOBAL] isr29
-[GLOBAL] isr30
-[GLOBAL] isr31
+GLOBAL isr0
+GLOBAL isr1
+GLOBAL isr2
+GLOBAL isr3
+GLOBAL isr4
+GLOBAL isr5
+GLOBAL isr6
+GLOBAL isr7
+GLOBAL isr8
+GLOBAL isr9
+GLOBAL isr10
+GLOBAL isr11
+GLOBAL isr12
+GLOBAL isr13
+GLOBAL isr14
+GLOBAL isr15
+GLOBAL isr16
+GLOBAL isr17
+GLOBAL isr18
+GLOBAL isr19
+GLOBAL isr20
+GLOBAL isr21
+GLOBAL isr22
+GLOBAL isr23
+GLOBAL isr24
+GLOBAL isr25
+GLOBAL isr26
+GLOBAL isr27
+GLOBAL isr28
+GLOBAL isr29
+GLOBAL isr30
+GLOBAL isr31
 
 
 ;  0: Divide by Zero Exception
@@ -265,7 +265,7 @@ isr31:
 ; thrown.  This saves the state of the processor on the stack so we can execute
 ; the ISR.  This function also sets up kernel mode segments, calls
 ; the C-level fault handler, and finally restores the stack frame.
-[EXTERN] isr_handler
+EXTERN isr_handler
 isr_common_stub:
     pusha        ; pushes all general purpose registers onto the stack in the
                  ; following order: eax, ecx, edx, ebx, esp, ebp, esi, edi, 
@@ -296,22 +296,22 @@ isr_common_stub:
 ; ISR entries 32-47
 ; These entries correspond to IRQs 0-15, but are mapped to 32-47 to not
 ; conflict with the first 32 ISRs already in the IDT.
-[GLOBAL] irq0
-[GLOBAL] irq1
-[GLOBAL] irq2
-[GLOBAL] irq3
-[GLOBAL] irq4
-[GLOBAL] irq5
-[GLOBAL] irq6
-[GLOBAL] irq7
-[GLOBAL] irq8
-[GLOBAL] irq9
-[GLOBAL] irq10
-[GLOBAL] irq11
-[GLOBAL] irq12
-[GLOBAL] irq13
-[GLOBAL] irq14
-[GLOBAL] irq15
+GLOBAL irq0
+GLOBAL irq1
+GLOBAL irq2
+GLOBAL irq3
+GLOBAL irq4
+GLOBAL irq5
+GLOBAL irq6
+GLOBAL irq7
+GLOBAL irq8
+GLOBAL irq9
+GLOBAL irq10
+GLOBAL irq11
+GLOBAL irq12
+GLOBAL irq13
+GLOBAL irq14
+GLOBAL irq15
 
 ; 32: IRQ0
 irq0:
@@ -426,7 +426,7 @@ irq15:
     jmp irq_common_stub
 
 
-[EXTERN irq_handler]
+EXTERN irq_handler
 ; Here is a stub for handling IRQs.  Here we save the state of the
 ; processor and call our general IRQ handler (located in irq.c).  This
 ; function also sets up kernel mode segments and restores the stack frame.

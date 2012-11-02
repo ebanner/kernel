@@ -1,8 +1,8 @@
 ; descriptors.s -- provides functions for loading a new GDT and IDT
 
-; The function loads a new GDT and fixes all segment registers.
-[GLOBAL] gdt_flush       ; Allows the C code in `gdt.c' to link to this
-[EXTERN] gp              ; Says that `gp' is in another file
+; The function loads a new GDT and fixes all segment registers
+GLOBAL gdt_flush       ; Allows the C code in `gdt.c' to link to this
+EXTERN gp              ; Says that `gp' is in another file
 gdt_flush:
     lgdt [gp]          ; Load the GDT with `gp' (defined in `gdt.'), which is
                        ; the pointer to our new GDT
@@ -25,8 +25,8 @@ setCS:
 
 
 ; Lets the processor know where the new IDT lives.
-[GLOBAL] idt_load
-[EXTERN] idtp
+GLOBAL idt_load
+EXTERN idtp
 idt_load:
     lidt [idtp]
     ret
