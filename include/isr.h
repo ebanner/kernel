@@ -38,8 +38,6 @@ struct registers {
 /* Define `isr_t' to be a pointer to a function that returns `void' and
  * takes an `int' as a parameter. */
 typedef void (*isr_t)(struct registers);
-/* an array of function pointers for every ISR */
-isr_t interrupt_handlers[256];
 /* a function that calls execute the interrupt handler function of the n'th
  * interrupt in the IDT */
 extern void register_interrupt_handler(unsigned char n, isr_t handler);

@@ -5,12 +5,10 @@
 #ifndef IDT_H
 #define IDT_H
 
-#define MASTER 0x20
-#define SLAVE  0xA0
-#define MASTER_CMD  MASTER
-#define MASTER_DATA (MASTER_CMD+1)
-#define SLAVE_CMD   SLAVE
-#define SLAVE_DATA  (SLAVE+1)
+#define MASTER_CMD  0x20
+#define MASTER_DATA 0x21
+#define SLAVE_CMD   0xA0
+#define SLAVE_DATA  0xA1
 #define INIT 0x11
 
 /* functions for initializing the IDT */

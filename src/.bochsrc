@@ -1,3 +1,0 @@
-boot: floppy
-floppya: 1_44="floppy.img", status=inserted
-display_library: sdl
